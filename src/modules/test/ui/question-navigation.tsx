@@ -17,6 +17,7 @@ interface Question {
 interface QuestionNavigationProps {
   questions: Question[]
   currentIndex: number
+  // @typescript-eslint/no-explicit-any
   answers: Record<string, any>
   flaggedQuestions: Set<string>
   onNavigate: (index: number) => void
@@ -40,16 +41,6 @@ export function QuestionNavigation({
 
   const isFlagged = (questionId: string) => {
     return flaggedQuestions.has(questionId)
-  }
-
-  const getQuestionIcon = (question: Question) => {
-    if (isAnswered(question.id)) {
-      return <CheckCircle className="w-4 h-4" />
-    }
-    if (isFlagged(question.id)) {
-      return <AlertCircle className="w-4 h-4" />
-    }
-    return <Circle className="w-4 h-4" />
   }
 
   const getQuestionStatus = (question: Question) => {

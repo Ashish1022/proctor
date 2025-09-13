@@ -54,15 +54,6 @@ interface BackendQuestion {
     updatedAt: Date
 }
 
-interface BackendTest {
-    id: string
-    title: string
-    description?: string
-    duration: number
-    updatedAt: Date
-    questions: BackendQuestion[]
-}
-
 export default function EditTestPageView({ testId }: { testId: string }) {
     const router = useRouter()
     const trpc = useTRPC()

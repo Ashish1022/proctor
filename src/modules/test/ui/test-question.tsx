@@ -18,7 +18,9 @@ interface Question {
 
 interface TestQuestionProps {
     question: Question
+    // @typescript-eslint/no-explicit-any
     answer: any
+    // @typescript-eslint/no-explicit-any
     onAnswerChange: (answer: any) => void
 }
 

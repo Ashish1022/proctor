@@ -50,70 +50,66 @@ export default function AdminDashboard() {
         <div className="p-6 lg:p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back! Here`&apos;`s what`&apos;`s happening with your tests today.</p>
+            <p className="text-muted-foreground">Welcome back! Here&apos;s what&apos;s happening with your tests today.</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <Card className="border-0 shadow-sm bg-card">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-heading">Recent Tests</CardTitle>
-                      <CardDescription>Manage your latest test creations</CardDescription>
-                    </div>
-                    <Button size="sm" className="gap-2">
-                      <Plus className="w-4 h-4" />
-                      New Test
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="space-y-0">
-                    {recentTests.map((test, index) => (
-                      <div
-                        key={test.id}
-                        className={`p-6 flex items-center justify-between hover:bg-muted/30 transition-colors ${index !== recentTests.length - 1 ? "border-b border-border" : ""
-                          }`}
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-medium text-foreground">{test.title}</h3>
-                            <Badge
-                              variant={
-                                test.status === "active" ? "default" : test.status === "draft" ? "secondary" : "outline"
-                              }
-                              className="text-xs"
-                            >
-                              {test.status}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>{test.subject}</span>
-                            <span>•</span>
-                            <span>{test.students} students</span>
-                            <span>•</span>
-                            <span>{test.created}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </div>
+          <Card className="border-0 shadow-sm bg-card">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="font-heading">Recent Tests</CardTitle>
+                  <CardDescription>Manage your latest test creations</CardDescription>
+                </div>
+                <Button size="sm" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  New Test
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="space-y-0">
+                {recentTests.map((test, index) => (
+                  <div
+                    key={test.id}
+                    className={`p-6 flex items-center justify-between hover:bg-muted/30 transition-colors ${index !== recentTests.length - 1 ? "border-b border-border" : ""
+                      }`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-medium text-foreground">{test.title}</h3>
+                        <Badge
+                          variant={
+                            test.status === "active" ? "default" : test.status === "draft" ? "secondary" : "outline"
+                          }
+                          className="text-xs"
+                        >
+                          {test.status}
+                        </Badge>
                       </div>
-                    ))}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>{test.subject}</span>
+                        <span>•</span>
+                        <span>{test.students} students</span>
+                        <span>•</span>
+                        <span>{test.created}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

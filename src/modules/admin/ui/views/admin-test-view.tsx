@@ -18,7 +18,7 @@ export default function TestsPage() {
 
     const trpc = useTRPC();
 
-    const { data: tests = [] } = useQuery(trpc.test.getAll.queryOptions());
+    const { data: tests } = useQuery(trpc.test.getAll.queryOptions());
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -72,7 +72,7 @@ export default function TestsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {tests.map((test) => (
+                                    {tests?.map((test) => (
                                         <TableRow key={test.id} className="border-border hover:bg-muted/30">
                                             <TableCell>
                                                 <div>

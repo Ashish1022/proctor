@@ -5,7 +5,7 @@ import { useAntiCheating } from "@/hooks/use-anti-cheating"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Shield, Eye, EyeOff } from "lucide-react"
+import { AlertTriangle, Shield, EyeOff } from "lucide-react"
 
 interface AntiCheatMonitorProps {
   onForceSubmit: () => void

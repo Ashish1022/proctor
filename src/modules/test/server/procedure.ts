@@ -70,7 +70,7 @@ export const testRouter = createTRPCRouter({
         return allTests;
     }),
 
-    getById: protectedProcedure
+    getById: baseProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
 
@@ -84,13 +84,6 @@ export const testRouter = createTRPCRouter({
                 throw new TRPCError({
                     code: 'NOT_FOUND',
                     message: 'Test not found'
-                });
-            }
-
-            if (test[0].createdBy !== ctx.user.id) {
-                throw new TRPCError({
-                    code: 'FORBIDDEN',
-                    message: 'Access denied'
                 });
             }
 
@@ -368,14 +361,14 @@ export const testRouter = createTRPCRouter({
                 const now = new Date();
 
                 const availableForTaking = testsWithSubmissions.filter(test => {
-                    // Check if test is within time bounds
-                    const isWithinTimeRange = (!test.startTime || test.startTime <= now) &&
-                        (!test.endTime || test.endTime >= now);
+                    // const isWithinTimeRange = (!test.startTime || test.startTime <= now) &&
+                    //     (!test.endTime || test.endTime >= now);
+                    //     (!test.endTime || test.endTime >= now);
 
                     // Check if user can take the test
                     const canTake = !test.userSubmission || test.userSubmission.status === 'in_progress';
 
-                    return isWithinTimeRange && canTake;
+                    return   canTake;
                 });
 
                 const submittedTests = testsWithSubmissions.filter(test =>
@@ -383,7 +376,6 @@ export const testRouter = createTRPCRouter({
                     (test.userSubmission.status === 'submitted' || test.userSubmission.status === 'graded')
                 );
 
-                // Also include in-progress tests in a separate category if needed
                 const inProgressTests = testsWithSubmissions.filter(test =>
                     test.userSubmission?.status === 'in_progress'
                 );
@@ -404,12 +396,10 @@ export const testRouter = createTRPCRouter({
             } catch (error) {
                 console.error("Error fetching tests by year:", error);
 
-                // Re-throw TRPC errors
                 if (error instanceof TRPCError) {
                     throw error;
                 }
 
-                // Handle other errors
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
                     message: 'Failed to fetch tests'
