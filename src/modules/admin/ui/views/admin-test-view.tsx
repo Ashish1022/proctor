@@ -8,23 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import { AdminSidebar } from "@/modules/admin/ui/sidebar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Plus, Search, Filter, MoreHorizontal, Eye, Edit, Copy, Trash2, Users, Clock, Calendar } from "lucide-react"
+import { Plus, MoreHorizontal, Eye, Edit, Copy, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/trpc/client"
 
 export default function TestsPage() {
-    const [searchQuery, setSearchQuery] = useState("")
     const router = useRouter();
 
     const trpc = useTRPC();
 
-    const { data: tests } = useQuery(trpc.test.getAll.queryOptions());
-
-    const filteredTests = tests!.filter(
-        (test) =>
-            test.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const { data: tests = [] } = useQuery(trpc.test.getAll.queryOptions());
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -65,21 +59,6 @@ export default function TestsPage() {
                                     <CardTitle className="font-heading">All Tests</CardTitle>
                                     <CardDescription>Manage your test collection</CardDescription>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search tests..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="pl-10 w-64"
-                                        />
-                                    </div>
-                                    <Button variant="outline" size="sm" className="gap-2 bg-transparent">
-                                        <Filter className="w-4 h-4" />
-                                        Filter
-                                    </Button>
-                                </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
@@ -93,7 +72,7 @@ export default function TestsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredTests.map((test) => (
+                                    {tests.map((test) => (
                                         <TableRow key={test.id} className="border-border hover:bg-muted/30">
                                             <TableCell>
                                                 <div>
