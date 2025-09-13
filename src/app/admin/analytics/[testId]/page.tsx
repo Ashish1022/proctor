@@ -10,17 +10,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { ArrowLeft, Download, Trophy, Users, Target, Search, FileText, Eye } from "lucide-react"
+import { ArrowLeft, Download, Trophy, Users, Target, Search, FileText, Eye, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useTRPC } from "@/trpc/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { generateAndDownloadPDF } from "@/lib/pdf-generator"
+import toast from "react-hot-toast"
 
 export default function TestAnalyticsPage() {
     const params = useParams()
     const testId = params.testId as string
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState("all")
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
     const trpc = useTRPC()
 
@@ -47,9 +50,34 @@ export default function TestAnalyticsPage() {
         })
     }
 
-    const handleDownloadPDF = () => {
-        console.log("Downloading PDF report for test:", testId)
-        // Implement PDF generation logic here
+    const handleDownloadPDF = async () => {
+        if (!analyticsData) {
+            toast.error("No data available to generate PDF")
+            return
+        }
+
+        setIsGeneratingPDF(true)
+
+        try {
+            // Show loading toast
+            toast.loading("Generating PDF report...", { id: "pdf-generation" })
+
+            const result = await generateAndDownloadPDF(analyticsData, analyticsData.testDetails.title)
+
+            if (result.success) {
+                toast.success(`PDF report downloaded successfully: ${result.filename}`, {
+                    id: "pdf-generation",
+                    duration: 5000
+                })
+            } else {
+                toast.error(`Failed to generate PDF: ${result.error}`, { id: "pdf-generation" })
+            }
+        } catch (error) {
+            console.error("Error generating PDF:", error)
+            toast.error("An unexpected error occurred while generating the PDF", { id: "pdf-generation" })
+        } finally {
+            setIsGeneratingPDF(false)
+        }
     }
 
     const handleViewDetails = (studentId: string) => {
@@ -61,7 +89,9 @@ export default function TestAnalyticsPage() {
     const filteredStudents = analyticsData?.studentRankings.filter(student => {
         const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             student.email.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesStatus = statusFilter === "all"
+        const matchesStatus = statusFilter === "all" ||
+            (statusFilter === "passed" && student.score >= 60) ||
+            (statusFilter === "failed" && student.score < 60)
         return matchesSearch && matchesStatus
     }) || []
 
@@ -119,9 +149,22 @@ export default function TestAnalyticsPage() {
                             <p className="text-gray-600 mt-2">Individual performance analysis and detailed metrics</p>
                             <p className="text-sm text-gray-500 mt-1">Created on {formatDate(testDetails.createdAt)}</p>
                         </div>
-                        <Button onClick={handleDownloadPDF} className="bg-primary hover:bg-primary/90">
-                            <Download className="w-4 h-4 mr-2" />
-                            Download PDF Report
+                        <Button
+                            onClick={handleDownloadPDF}
+                            className="bg-primary hover:bg-primary/90"
+                            disabled={isGeneratingPDF}
+                        >
+                            {isGeneratingPDF ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Download PDF Report
+                                </>
+                            )}
                         </Button>
                     </div>
 
