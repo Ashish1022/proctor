@@ -14,7 +14,7 @@ const StudentPage = async () => {
 
   return (
     <Suspense>
-      <StudentDashboard year={user!.year} userId={user!.id} />
+      <StudentDashboard year={user!.year} userId={user!.id} name={user!.firstname}/>
     </Suspense>
   )
 }

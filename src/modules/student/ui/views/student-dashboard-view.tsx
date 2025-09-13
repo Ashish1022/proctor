@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { StudentHeader } from "@/modules/student/ui/header"
-import { Clock, Calendar, Trophy, TrendingUp, Play, BookOpen, CheckCircle, AlertCircle } from "lucide-react"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { Clock, Calendar, Play, BookOpen, CheckCircle } from "lucide-react"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/trpc/client"
 import { useRouter } from "next/navigation"
 
-export default function StudentDashboard({ year, userId }: { year: string; userId: string }) {
+export default function StudentDashboard({ year, userId, name }: { year: string; userId: string; name: string }) {
     const trpc = useTRPC();
 
     const { data: studentData } = useSuspenseQuery(trpc.test.getTestByYear.queryOptions({ year: year, userId: userId }));
@@ -18,19 +18,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
 
     const completedTests = studentData.submittedTests || []
     const pendingTests = studentData.availableTests || []
-
-    const getDifficultyColor = (difficulty: string) => {
-        switch (difficulty) {
-            case "Easy":
-                return "bg-green-100 text-green-800"
-            case "Medium":
-                return "bg-yellow-100 text-yellow-800"
-            case "Hard":
-                return "bg-red-100 text-red-800"
-            default:
-                return "bg-gray-100 text-gray-800"
-        }
-    }
 
     const getStatusIcon = (hasSubmission: boolean) => {
         if (hasSubmission) {
@@ -43,10 +30,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
         return new Date(dateString).toLocaleDateString()
     }
 
-    const calculatePercentage = (obtained: number, total: number) => {
-        return Math.round((obtained / total) * 100)
-    }
-
     const router = useRouter();
 
     return (
@@ -54,16 +37,14 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
             <StudentHeader />
 
             <div className="container mx-auto px-4 py-8">
-                {/* Welcome Section */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Welcome back, Jane!</h1>
+                    <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Welcome back, {name}!</h1>
                     <p className="text-muted-foreground">
                         Ready to continue your learning journey? Here are your upcoming tests.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Available Tests */}
                     <div className="lg:col-span-2">
                         <Card className="border-0 shadow-sm bg-card">
                             <CardHeader className="pb-4">
@@ -71,7 +52,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
                                 <CardDescription>Tests you can take right now</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {/* Fixed: Use pendingTests instead of undefined availableTests */}
                                 {pendingTests.map((test) => (
                                     <div
                                         key={test.id}
@@ -82,13 +62,11 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
                                                 <div className="flex items-center gap-3 mb-2">
                                                     {getStatusIcon(!!test.userSubmission)}
                                                     <h3 className="font-medium text-foreground">{test.title}</h3>
-                                                    {/* Note: subject and difficulty are not in API response */}
-                                                    {/* You may need to add these fields to your database/API */}
                                                     <Badge variant="outline" className="bg-transparent">
-                                                        General {/* Placeholder - add subject to API */}
+                                                        General
                                                     </Badge>
                                                     <Badge className="text-xs bg-gray-100 text-gray-800">
-                                                        Medium {/* Placeholder - add difficulty to API */}
+                                                        Medium
                                                     </Badge>
                                                 </div>
                                                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
@@ -115,7 +93,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
                                                     </div>
                                                 )}
                                                 <div className="text-sm text-muted-foreground">
-                                                    {/* Note: attempts/maxAttempts not in current API - you may need to add this */}
                                                     Status: {test.userSubmission?.status || 'Not Started'}
                                                 </div>
                                             </div>
@@ -140,7 +117,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
                                     </div>
                                 ))}
 
-                                {/* Show completed tests as well */}
                                 {completedTests.length > 0 && (
                                     <>
                                         <div className="pt-6">
@@ -194,7 +170,6 @@ export default function StudentDashboard({ year, userId }: { year: string; userI
                         </Card>
                     </div>
 
-                    {/* Stats Sidebar - You can add this if needed */}
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>

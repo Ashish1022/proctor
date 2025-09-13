@@ -6,37 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { AdminSidebar } from "@/modules/admin/ui/sidebar"
 import { Users, FileText, TrendingUp, Clock, Plus, MoreHorizontal, Eye, Edit } from "lucide-react"
 
-const stats = [
-  {
-    title: "Total Tests",
-    value: "24",
-    change: "+12%",
-    changeType: "positive" as const,
-    icon: FileText,
-  },
-  {
-    title: "Active Students",
-    value: "1,234",
-    change: "+5%",
-    changeType: "positive" as const,
-    icon: Users,
-  },
-  {
-    title: "Completion Rate",
-    value: "87%",
-    change: "+3%",
-    changeType: "positive" as const,
-    icon: TrendingUp,
-  },
-  {
-    title: "Avg. Duration",
-    value: "45m",
-    change: "-2m",
-    changeType: "neutral" as const,
-    icon: Clock,
-  },
-]
-
 const recentTests = [
   {
     id: 1,
@@ -72,37 +41,6 @@ const recentTests = [
   },
 ]
 
-const recentActivity = [
-  {
-    id: 1,
-    action: "New test created",
-    details: "Mathematics Final Exam",
-    user: "Sarah Johnson",
-    time: "2 hours ago",
-  },
-  {
-    id: 2,
-    action: "Student completed test",
-    details: "History Quiz - Chapter 5",
-    user: "Mike Chen",
-    time: "4 hours ago",
-  },
-  {
-    id: 3,
-    action: "Test published",
-    details: "Science Lab Assessment",
-    user: "Emily Davis",
-    time: "1 day ago",
-  },
-  {
-    id: 4,
-    action: "User registered",
-    details: "New student account",
-    user: "Alex Rodriguez",
-    time: "2 days ago",
-  },
-]
-
 export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
@@ -110,47 +48,12 @@ export default function AdminDashboard() {
 
       <div className="lg:pl-64">
         <div className="p-6 lg:p-8">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Dashboard</h1>
             <p className="text-muted-foreground">Welcome back! Here's what's happening with your tests today.</p>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat) => (
-              <Card key={stat.title} className="border-0 shadow-sm bg-card">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <stat.icon className="w-6 h-6 text-primary" />
-                    </div>
-                  </div>
-                  <div className="mt-4 flex items-center">
-                    <span
-                      className={`text-sm font-medium ${
-                        stat.changeType === "positive"
-                          ? "text-green-600"
-                          : stat.changeType === "neutral"
-                            ? "text-red-600"
-                            : "text-muted-foreground"
-                      }`}
-                    >
-                      {stat.change}
-                    </span>
-                    <span className="text-sm text-muted-foreground ml-1">from last month</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Recent Tests */}
             <div className="lg:col-span-2">
               <Card className="border-0 shadow-sm bg-card">
                 <CardHeader className="pb-4">
@@ -170,9 +73,8 @@ export default function AdminDashboard() {
                     {recentTests.map((test, index) => (
                       <div
                         key={test.id}
-                        className={`p-6 flex items-center justify-between hover:bg-muted/30 transition-colors ${
-                          index !== recentTests.length - 1 ? "border-b border-border" : ""
-                        }`}
+                        className={`p-6 flex items-center justify-between hover:bg-muted/30 transition-colors ${index !== recentTests.length - 1 ? "border-b border-border" : ""
+                          }`}
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
@@ -208,32 +110,6 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Activity */}
-            <div>
-              <Card className="border-0 shadow-sm bg-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="font-heading">Recent Activity</CardTitle>
-                  <CardDescription>Latest actions in your platform</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground">{activity.action}</p>
-                        <p className="text-sm text-muted-foreground truncate">{activity.details}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-muted-foreground">{activity.user}</span>
-                          <span className="text-xs text-muted-foreground">•</span>
-                          <span className="text-xs text-muted-foreground">{activity.time}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
                 </CardContent>
               </Card>
             </div>
