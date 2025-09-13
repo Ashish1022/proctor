@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Plus, Trash2, Save, Eye } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 
 interface Question {
@@ -47,9 +47,9 @@ export default function CreateTestPage() {
     });
 
     const yearOptions: { value: UserYear; label: string }[] = [
-        { value: 'BE', label: 'Bachelor of Engineering (BE)' },
-        { value: 'SE', label: 'Software Engineering (SE)' },
-        { value: 'TE', label: 'Technical Engineering (TE)' }
+        { value: 'BE', label: '(BE)' },
+        { value: 'SE', label: '(SE)' },
+        { value: 'TE', label: '(TE)' }
     ];
 
     const handleTargetYearChange = (year: UserYear, checked: boolean) => {
@@ -157,7 +157,7 @@ export default function CreateTestPage() {
             });
 
             toast.success("Test created successfully!");
-        } catch (error) {
+        } catch {
             toast.error("Failed to create test. Please try again.");
         }
     };
@@ -246,7 +246,7 @@ export default function CreateTestPage() {
                                         rows={3}
                                     />
                                 </div>
-                                
+
                                 {/* Target Years Selection */}
                                 <div>
                                     <Label>Target Year Categories *</Label>
@@ -258,7 +258,7 @@ export default function CreateTestPage() {
                                                     <Checkbox
                                                         id={option.value}
                                                         checked={targetYears.includes(option.value)}
-                                                        onCheckedChange={(checked) => 
+                                                        onCheckedChange={(checked) =>
                                                             handleTargetYearChange(option.value, checked as boolean)
                                                         }
                                                     />
