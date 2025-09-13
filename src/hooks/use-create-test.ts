@@ -16,7 +16,7 @@ export const useCreateTest = () => {
         },
         onSuccess: (data) => {
             toast.success("Test created successfully!");
-            router.push(`/admin/tests/${data!.testId}`);
+            router.push(`/admin/tests/${data!.testId}/edit`);
         }
     }));
 

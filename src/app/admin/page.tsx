@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AdminSidebar } from "@/modules/admin/ui/sidebar"
 import { Plus, MoreHorizontal, Eye, Edit } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const recentTests = [
   {
@@ -42,6 +43,7 @@ const recentTests = [
 ]
 
 export default function AdminDashboard() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-background">
       <AdminSidebar />
@@ -98,7 +100,7 @@ export default function AdminDashboard() {
                       <Button variant="ghost" size="sm">
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/tests${test.id}/edit`)}>
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button variant="ghost" size="sm">
