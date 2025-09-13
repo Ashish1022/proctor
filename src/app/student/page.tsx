@@ -3,6 +3,8 @@ import { caller } from '@/trpc/server'
 import { redirect } from 'next/navigation';
 import React, { Suspense } from 'react'
 
+export const dynamic = "force-dynamic"
+
 const StudentPage = async () => {
 
   const session = await caller.auth.session();
