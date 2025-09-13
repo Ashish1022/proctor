@@ -60,7 +60,7 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
                 user: user[0],
             },
         });
-    } catch (error) {
+    } catch {
         throw new TRPCError({
             code: 'UNAUTHORIZED',
             message: 'Invalid token'

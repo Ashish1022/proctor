@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AdminSidebar } from "@/modules/admin/ui/sidebar"
-import { Users, FileText, TrendingUp, Clock, Plus, MoreHorizontal, Eye, Edit } from "lucide-react"
+import { Plus, MoreHorizontal, Eye, Edit } from "lucide-react"
 
 const recentTests = [
   {
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
         <div className="p-6 lg:p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back! Here's what's happening with your tests today.</p>
+            <p className="text-muted-foreground">Welcome back! Here`&apos;`s what`&apos;`s happening with your tests today.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
