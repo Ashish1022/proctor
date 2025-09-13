@@ -10,8 +10,5 @@ export const generateAuthCookie = async ({ value, prefix }: { value: string, pre
         httpOnly: true,
         secure: isProduction,
         path: "/",
-        ...(isProduction && process.env.NEXT_PUBLIC_ROOT_DOMAIN && {
-            domain: `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
-        })
     });
 };

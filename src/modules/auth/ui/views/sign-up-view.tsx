@@ -53,7 +53,7 @@ export const SignUpView = () => {
     }
 
     const handleOTPSuccess = () => {
-        router.push("/admin");
+        router.push("/student");
     };
 
     const trpc = useTRPC();
@@ -93,7 +93,7 @@ export const SignUpView = () => {
                         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
                             <BookOpen className="w-6 h-6 text-primary-foreground" />
                         </div>
-                        <h1 className="text-2xl font-heading font-bold">TestPlatform</h1>
+                        <h1 className="text-2xl font-heading font-bold">ITSA</h1>
                     </div>
                     <p className="text-muted-foreground">Create your account to get started with online testing.</p>
                 </div>

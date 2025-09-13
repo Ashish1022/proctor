@@ -54,11 +54,11 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="platform-name">Platform Name</Label>
-                      <Input id="platform-name" defaultValue="TestPlatform Pro" />
+                      <Input id="platform-name" defaultValue="ITSA Pro" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="platform-url">Platform URL</Label>
-                      <Input id="platform-url" defaultValue="https://testplatform.com" />
+                      <Input id="platform-url" defaultValue="https://itsa-quiz.vercel.app" />
                     </div>
                   </div>
 
@@ -157,7 +157,7 @@ export default function SettingsPage() {
                     <Label htmlFor="email-signature">Email Signature</Label>
                     <Textarea
                       id="email-signature"
-                      defaultValue="Best regards,&#10;The TestPlatform Team"
+                      defaultValue="Best regards,&#10;The ITSA Team"
                       className="min-h-20"
                     />
                   </div>

@@ -21,7 +21,7 @@ export function StudentHeader() {
             <BookOpen className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-heading font-bold">TestPlatform</h1>
+            <h1 className="text-lg font-heading font-bold">ITSA</h1>
             <p className="text-xs text-muted-foreground hidden sm:block">Student Portal</p>
           </div>
         </div>

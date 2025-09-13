@@ -48,7 +48,7 @@ export function AdminSidebar() {
               <BookOpen className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-heading font-bold text-sidebar-foreground">TestPlatform</h1>
+              <h1 className="text-lg font-heading font-bold text-sidebar-foreground">ITSA</h1>
               <p className="text-xs text-sidebar-foreground/60">Admin Panel</p>
             </div>
           </div>
