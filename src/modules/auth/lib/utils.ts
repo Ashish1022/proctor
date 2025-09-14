@@ -42,7 +42,6 @@ export const sendEmail = async (to: string, subject: string, templateName: strin
         });
         return true;
     } catch (error) {
-        console.log("Error sending email", error);
         return false;
     }
 };

@@ -12,7 +12,6 @@ export const useCreateTest = () => {
     const createTestMutation = useMutation(trpc.test.create.mutationOptions({
         onError: (error) => {
             toast.error(error.message);
-            console.log(error.message)
         },
         onSuccess: (data) => {
             toast.success("Test created successfully!");

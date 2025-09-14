@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { StudentHeader } from "@/modules/student/ui/header"
 import { Clock, Calendar, Play, BookOpen, CheckCircle } from "lucide-react"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -14,7 +13,6 @@ export default function StudentDashboard({ year, userId, name }: { year: string;
     const trpc = useTRPC();
 
     const { data: studentData } = useSuspenseQuery(trpc.test.getTestByYear.queryOptions({ year: year, userId: userId }));
-    console.log(studentData)
 
     const completedTests = studentData.submittedTests || []
     const pendingTests = studentData.availableTests || []
