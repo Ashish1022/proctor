@@ -95,7 +95,7 @@ export function AntiCheatMonitor({ onForceSubmit, testId }: AntiCheatMonitorProp
       >
         <Badge className={`${getViolationColor(violationCount)} px-3 py-2 text-sm font-medium shadow-lg hover:scale-105 transition-transform`}>
           <Shield className="h-3 w-3 mr-1" />
-          {violationCount}/3
+          {violationCount}/10
         </Badge>
       </div>
     )
