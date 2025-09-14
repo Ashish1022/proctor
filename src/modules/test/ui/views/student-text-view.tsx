@@ -307,9 +307,9 @@ export default function TestPage({
 
     const canStartTest = () => {
         if (!testData) return false
-        
+
         if (!testData.startTime) return true
-        
+
         const startTime = new Date(testData.startTime)
         return currentTime >= startTime
     }
@@ -325,7 +325,7 @@ export default function TestPage({
         const startTime = new Date(testData.startTime)
         const timeDiff = startTime.getTime() - currentTime.getTime()
         if (timeDiff <= 0) return null
-        
+
         const minutes = Math.floor(timeDiff / (1000 * 60))
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000)
         return { minutes, seconds }
@@ -388,7 +388,7 @@ export default function TestPage({
 
     if (!testStarted) {
         const timeUntilStart = getTimeUntilStart()
-        
+
         return (
             <div className="min-h-screen bg-gray-50 p-4">
                 <div className="max-w-4xl mx-auto">
@@ -497,13 +497,13 @@ export default function TestPage({
                                     className="px-8"
                                     disabled={startTestMutation.isPending || !canStartTest()}
                                 >
-                                    {startTestMutation.isPending 
-                                        ? "Starting..." 
-                                        : !canStartTest() 
-                                        ? "Test Not Available Yet"
-                                        : existingSubmission 
-                                        ? "Continue Test" 
-                                        : "Start Test"
+                                    {startTestMutation.isPending
+                                        ? "Starting..."
+                                        : !canStartTest()
+                                            ? "Test Not Available Yet"
+                                            : existingSubmission
+                                                ? "Continue Test"
+                                                : "Start Test"
                                     }
                                 </Button>
                             </div>
