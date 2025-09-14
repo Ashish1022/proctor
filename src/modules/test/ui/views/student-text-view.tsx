@@ -9,7 +9,7 @@ import { AntiCheatMonitor } from "@/modules/test/anti-cheat/monitor"
 import { QuestionNavigation } from "@/modules/test/ui/question-navigation"
 import { TestQuestion } from "@/modules/test/ui/test-question"
 import { TestTimer } from "@/modules/test/ui/test-timer"
-import { AlertTriangle, Flag, ChevronLeft, ChevronRight, Send } from "lucide-react"
+import { AlertTriangle, Flag, ChevronLeft, ChevronRight, Send, Clock, FileText, Users, Target } from "lucide-react"
 import { useTRPC } from "@/trpc/client"
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
@@ -30,7 +30,10 @@ interface TestData {
     id: string
     title: string
     description: string
+    instructions: string
     duration: number
+    startTime?: string
+    endTime?: string
     questions: Question[]
     settings: {
         shuffleQuestions: boolean
@@ -66,6 +69,7 @@ export default function TestPage({
     const [testStarted, setTestStarted] = useState(false)
     const [testSubmitted, setTestSubmitted] = useState(false)
     const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false)
+    const [currentTime, setCurrentTime] = useState(new Date())
 
     const trpc = useTRPC();
 
@@ -101,6 +105,15 @@ export default function TestPage({
         }
     }))
 
+    // Update current time every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date())
+        }, 1000)
+
+        return () => clearInterval(timer)
+    }, [])
+
     useEffect(() => {
         if (testDataResponse) {
             const questions = testDataResponse.questions.map(q => ({
@@ -118,9 +131,12 @@ export default function TestPage({
             const transformedTestData: TestData = {
                 id: testDataResponse.id,
                 title: testDataResponse.title,
+                instructions: testDataResponse.instructions || "",
                 description: testDataResponse.description || "",
                 duration: testDataResponse.duration,
-                questions: shuffleArray(questions), 
+                startTime: testDataResponse.startTime?.toISOString(),
+                endTime: testDataResponse.endTime?.toISOString(),
+                questions: shuffleArray(questions),
                 settings: {
                     shuffleQuestions: true,
                     showResults: true,
@@ -179,6 +195,16 @@ export default function TestPage({
         return () => clearInterval(timer)
     }, [testStarted, testSubmitted, timeRemaining])
 
+    // Check if test has ended based on end time
+    useEffect(() => {
+        if (testData?.endTime && testStarted && !testSubmitted) {
+            const endTime = new Date(testData.endTime)
+            if (currentTime >= endTime) {
+                handleForceSubmit()
+            }
+        }
+    }, [currentTime, testData?.endTime, testStarted, testSubmitted])
+
     const handleStartTest = async () => {
         if (!userId) {
             toast.error("User not authenticated")
@@ -232,11 +258,12 @@ export default function TestPage({
     }
 
     const handleForceSubmit = useCallback(() => {
-        if (testData) {
+        if (testData && testStarted && !testSubmitted) {
             setTestSubmitted(true)
+            toast.success("Test time has ended. Submitting automatically...")
             submitTest(true)
         }
-    }, [testData])
+    }, [testData, testStarted, testSubmitted])
 
     const handleSubmitTest = () => {
         setShowSubmitConfirmation(true)
@@ -278,6 +305,36 @@ export default function TestPage({
         }).length
     }
 
+    const canStartTest = () => {
+        if (!testData) return false
+        
+        if (!testData.startTime) return true
+        
+        const startTime = new Date(testData.startTime)
+        return currentTime >= startTime
+    }
+
+    const isTestExpired = () => {
+        if (!testData?.endTime) return false
+        const endTime = new Date(testData.endTime)
+        return currentTime > endTime
+    }
+
+    const getTimeUntilStart = () => {
+        if (!testData?.startTime) return null
+        const startTime = new Date(testData.startTime)
+        const timeDiff = startTime.getTime() - currentTime.getTime()
+        if (timeDiff <= 0) return null
+        
+        const minutes = Math.floor(timeDiff / (1000 * 60))
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000)
+        return { minutes, seconds }
+    }
+
+    const formatDateTime = (dateString: string) => {
+        return new Date(dateString).toLocaleString()
+    }
+
     if (!testData) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -310,7 +367,28 @@ export default function TestPage({
         )
     }
 
+    if (isTestExpired()) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Card className="w-full max-w-md">
+                    <CardContent className="text-center p-6">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Clock className="h-8 w-8 text-red-600" />
+                        </div>
+                        <h2 className="text-xl font-semibold mb-2">Test Expired</h2>
+                        <p className="text-gray-600 mb-4">This test has ended and is no longer available.</p>
+                        <Button onClick={() => router.push('/dashboard')}>
+                            Return to Dashboard
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
     if (!testStarted) {
+        const timeUntilStart = getTimeUntilStart()
+        
         return (
             <div className="min-h-screen bg-gray-50 p-4">
                 <div className="max-w-4xl mx-auto">
@@ -319,7 +397,7 @@ export default function TestPage({
                             <CardTitle className="text-2xl">{testData.title}</CardTitle>
                             <p className="text-gray-600">{testData.description}</p>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                                     <div className="text-2xl font-bold text-blue-600">{testData.questions.length}</div>
@@ -337,12 +415,63 @@ export default function TestPage({
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p className="text-blue-800 text-sm">
-                                    Questions will be presented in random order for each student.
-                                </p>
+                            {(testData.startTime || testData.endTime) && (
+                                <Card className="bg-gray-50">
+                                    <CardContent className="p-4">
+                                        <h3 className="font-semibold mb-3 flex items-center gap-2">
+                                            <Clock className="h-4 w-4" />
+                                            Test Schedule
+                                        </h3>
+                                        <div className="space-y-2 text-sm">
+                                            {testData.startTime && (
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">Start Time:</span>
+                                                    <span className="font-medium">{formatDateTime(testData.startTime)}</span>
+                                                </div>
+                                            )}
+                                            {testData.endTime && (
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">End Time:</span>
+                                                    <span className="font-medium">{formatDateTime(testData.endTime)}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            {testData.instructions && (
+                                <Card className="bg-blue-50 border-blue-200">
+                                    <CardContent className="p-4">
+                                        <h3 className="font-semibold mb-3 flex items-center gap-2">
+                                            <FileText className="h-4 w-4" />
+                                            Instructions
+                                        </h3>
+                                        <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                                            {testData.instructions}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            <div className="space-y-3">
+                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                    <p className="text-amber-800 text-sm flex items-center gap-2">
+                                        <Target className="h-4 w-4" />
+                                        Questions will be presented in random order for each student.
+                                    </p>
+                                </div>
+
+                                {testData.settings.antiCheatEnabled && (
+                                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                        <p className="text-red-800 text-sm">
+                                            <strong>Anti-cheat monitoring is enabled.</strong> Switching tabs, minimizing the window, or leaving the test page may result in automatic submission.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
+                            {/* Existing Session Warning */}
                             {existingSubmission && existingSubmission.status === 'in_progress' && (
                                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                                     <p className="text-yellow-800">
@@ -351,14 +480,31 @@ export default function TestPage({
                                 </div>
                             )}
 
+                            {/* Time Until Start */}
+                            {timeUntilStart && (
+                                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg text-center">
+                                    <p className="text-orange-800 font-medium">
+                                        Test will be available in: {timeUntilStart.minutes}m {timeUntilStart.seconds}s
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Start Button */}
                             <div className="flex justify-center">
                                 <Button
                                     onClick={handleStartTest}
                                     size="lg"
                                     className="px-8"
-                                    disabled={startTestMutation.isPending}
+                                    disabled={startTestMutation.isPending || !canStartTest()}
                                 >
-                                    {startTestMutation.isPending ? "Starting..." : existingSubmission ? "Continue Test" : "Start Test"}
+                                    {startTestMutation.isPending 
+                                        ? "Starting..." 
+                                        : !canStartTest() 
+                                        ? "Test Not Available Yet"
+                                        : existingSubmission 
+                                        ? "Continue Test" 
+                                        : "Start Test"
+                                    }
                                 </Button>
                             </div>
                         </CardContent>
