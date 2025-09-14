@@ -16,11 +16,13 @@ import { toast } from "sonner";
 
 interface Question {
     questionText: string;
-    questionType: "multiple_choice" | "multiple_select";
+    questionType: "multiple_choice" | "multiple_select" | "code";
     options: string[];
     correctAnswers: number[];
     marks: number;
     order: number;
+    codeSnippet?: string;
+    language?: string;
 }
 
 type UserYear = 'BE' | 'SE' | 'TE';
@@ -52,6 +54,19 @@ export default function CreateTestPage() {
         { value: 'TE', label: '(TE)' }
     ];
 
+    const languageOptions = [
+        { value: "javascript", label: "JavaScript" },
+        { value: "python", label: "Python" },
+        { value: "java", label: "Java" },
+        { value: "cpp", label: "C++" },
+        { value: "c", label: "C" },
+        { value: "html", label: "HTML" },
+        { value: "css", label: "CSS" },
+        { value: "sql", label: "SQL" },
+        { value: "php", label: "PHP" },
+        { value: "go", label: "Go" }
+    ];
+
     const handleTargetYearChange = (year: UserYear, checked: boolean) => {
         if (checked) {
             setTargetYears([...targetYears, year]);
@@ -80,6 +95,8 @@ export default function CreateTestPage() {
             ...currentQuestion,
             order: questions.length,
             options: currentQuestion.options.filter(opt => opt.trim()),
+            codeSnippet: currentQuestion.questionType === "code" ? currentQuestion.codeSnippet : undefined,
+            language: currentQuestion.questionType === "code" ? currentQuestion.language : undefined,
         };
 
         setQuestions([...questions, newQuestion]);
@@ -90,6 +107,8 @@ export default function CreateTestPage() {
             correctAnswers: [],
             marks: 1,
             order: 0,
+            codeSnippet: "",
+            language: undefined,
         });
         toast.success("Question added successfully");
     };
@@ -178,6 +197,65 @@ export default function CreateTestPage() {
                 correctAnswers: newCorrectAnswers
             });
         }
+    };
+
+    const renderCodePreview = (code: string, language: string) => {
+        return (
+            <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-gray-400 uppercase">{language}</span>
+                </div>
+                <pre className="whitespace-pre-wrap">{code}</pre>
+            </div>
+        );
+    };
+
+    const renderQuestionPreview = (question: Question) => {
+        return (
+            <div className="space-y-4 p-4 border rounded-lg bg-white">
+                <div className="flex items-center gap-2 mb-3">
+                    <Badge variant="outline">
+                        {question.questionType === "code" ? "Code Question" :
+                            question.questionType.replace("_", " ")}
+                    </Badge>
+                    <Badge variant="secondary">{question.marks} pts</Badge>
+                </div>
+
+                <div className="prose max-w-none">
+                    <p className="text-lg font-medium">{question.questionText}</p>
+                </div>
+
+                {question.questionType === "code" && question.codeSnippet && (
+                    <div className="mt-4">
+                        {renderCodePreview(question.codeSnippet, question.language || "javascript")}
+                    </div>
+                )}
+
+                {(question.questionType !== "code" || question.options.length > 0) && (
+                    <div className="space-y-2 mt-4">
+                        {question.questionType === "code" && (
+                            <Label className="text-sm font-medium text-gray-700">
+                                Possible Outputs:
+                            </Label>
+                        )}
+                        {question.options.map((option, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                                <input
+                                    type={question.questionType === 'multiple_choice' || question.questionType === 'code' ? 'radio' : 'checkbox'}
+                                    checked={question.correctAnswers.includes(index)}
+                                    readOnly
+                                    className="text-blue-600"
+                                />
+                                <span className={`${question.correctAnswers.includes(index) ? 'font-medium text-green-700' : ''} ${question.questionType === "code" ? 'font-mono text-sm bg-gray-100 px-2 py-1 rounded' : ''
+                                    }`}>
+                                    {option}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
     };
 
     return (
@@ -294,7 +372,7 @@ export default function CreateTestPage() {
                                         <Label>Question Type</Label>
                                         <Select
                                             value={currentQuestion.questionType}
-                                            onValueChange={(value: "multiple_choice" | "multiple_select") =>
+                                            onValueChange={(value: "multiple_choice" | "multiple_select" | "code") =>
                                                 setCurrentQuestion({ ...currentQuestion, questionType: value, correctAnswers: [] })
                                             }
                                         >
@@ -304,6 +382,7 @@ export default function CreateTestPage() {
                                             <SelectContent>
                                                 <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
                                                 <SelectItem value="multiple_select">Multiple Select</SelectItem>
+                                                <SelectItem value="code">Code Question</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -318,6 +397,45 @@ export default function CreateTestPage() {
                                             rows={3}
                                         />
                                     </div>
+
+                                    {currentQuestion.questionType === "code" && (
+                                        <>
+                                            <div>
+                                                <Label>Programming Language</Label>
+                                                <Select
+                                                    value={currentQuestion.language}
+                                                    onValueChange={(value) => setCurrentQuestion({ ...currentQuestion, language: value })}
+                                                >
+                                                    <SelectTrigger className="mt-2">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {languageOptions.map((lang) => (
+                                                            <SelectItem key={lang.value} value={lang.value}>
+                                                                {lang.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label>Code Snippet</Label>
+                                                <Textarea
+                                                    value={currentQuestion.codeSnippet}
+                                                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, codeSnippet: e.target.value })}
+                                                    placeholder="Paste your code here..."
+                                                    className="mt-2 font-mono text-sm"
+                                                    rows={8}
+                                                />
+                                                {currentQuestion.codeSnippet && (
+                                                    <div className="mt-2">
+                                                        <Label className="text-xs text-gray-600">Preview:</Label>
+                                                        {renderCodePreview(currentQuestion.codeSnippet, currentQuestion.language || "javascript")}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
 
                                     <div>
                                         <Label>Options *</Label>
@@ -350,6 +468,38 @@ export default function CreateTestPage() {
                                             </Button>
                                         </div>
                                     </div>
+
+                                    {/* <div>
+                                        <Label>Options *</Label>
+                                        <div className="space-y-2 mt-2">
+                                            {currentQuestion.options.map((option, index) => (
+                                                <div key={index} className="flex gap-2 items-center">
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type={currentQuestion.questionType === 'multiple_choice' ? 'radio' : 'checkbox'}
+                                                            name="correct-answer"
+                                                            checked={currentQuestion.correctAnswers.includes(index)}
+                                                            onChange={(e) => handleCorrectAnswerChange(index, e.target.checked)}
+                                                        />
+                                                    </div>
+                                                    <Input
+                                                        value={option}
+                                                        onChange={(e) => updateQuestionOption(index, e.target.value)}
+                                                        placeholder={`Option ${index + 1}`}
+                                                    />
+                                                    {currentQuestion.options.length > 2 && (
+                                                        <Button variant="outline" size="sm" onClick={() => removeOption(index)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            <Button variant="outline" size="sm" onClick={addOption}>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add Option
+                                            </Button>
+                                        </div>
+                                    </div> */}
 
                                     <div>
                                         <Label>Marks</Label>

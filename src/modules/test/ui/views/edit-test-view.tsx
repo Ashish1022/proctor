@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 // UI-friendly types
 interface Question {
     id: string
-    type: "multiple_choice" | "multiple_select"
+    type: "multiple_choice" | "multiple_select" | "code"
     question: string
     options?: string[]
     correctAnswer?: string | string[]
@@ -38,20 +38,6 @@ interface Test {
     description: string
     settings: TestSettings
     questions: Question[]
-}
-
-// Backend types
-interface BackendQuestion {
-    id: string
-    testId: string
-    questionText: string
-    questionType: "multiple_choice" | "multiple_select"
-    options: string[]
-    correctAnswers: number[]
-    marks: number
-    order: number
-    createdAt: Date
-    updatedAt: Date
 }
 
 export default function EditTestPageView({ testId }: { testId: string }) {

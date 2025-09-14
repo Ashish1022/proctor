@@ -49,7 +49,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
     const registerMutation = useMutation(trpc.auth.register.mutationOptions({
         onError: (error) => {
             toast.error(error.message);
-            console.log(error.message);
         },
         onSuccess: async (_, data: z.infer<typeof registerSchema>) => {
             await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
@@ -199,9 +198,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <FormLabel htmlFor="password">Password</FormLabel>
-                                    <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                                        Forgot password?
-                                    </Link>
                                 </div>
                                 <FormControl>
                                     <div className="relative">

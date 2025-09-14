@@ -6,12 +6,14 @@ import { CheckCircle, Circle, AlertCircle } from "lucide-react"
 
 interface Question {
   id: string
-  type: "multiple_choice" | "multiple_select" | "text" | "essay" | "true_false"
-  question: string
+  type: "multiple_choice" | "multiple_select" | "code"
+  questionText: string
   options?: string[]
-  correctAnswer?: string | string[]
-  points: number
+  correctAnswers?: number[]
+  marks: number
   timeLimit?: number
+  codeSnippet?: string;
+  language?: string;
 }
 
 interface QuestionNavigationProps {
@@ -23,14 +25,14 @@ interface QuestionNavigationProps {
   onNavigate: (index: number) => void
 }
 
-export function QuestionNavigation({ 
-  questions, 
-  currentIndex, 
-  answers, 
-  flaggedQuestions, 
-  onNavigate 
+export function QuestionNavigation({
+  questions,
+  currentIndex,
+  answers,
+  flaggedQuestions,
+  onNavigate
 }: QuestionNavigationProps) {
-  
+
   const isAnswered = (questionId: string) => {
     const answer = answers[questionId]
     if (answer === null || answer === undefined) return false
@@ -65,11 +67,11 @@ export function QuestionNavigation({
             className={cn(
               "h-10 w-10 p-0 relative",
               getQuestionStatus(question) === "answered" &&
-                currentIndex !== index &&
-                "border-green-500 bg-green-50 text-green-700 hover:bg-green-100",
+              currentIndex !== index &&
+              "border-green-500 bg-green-50 text-green-700 hover:bg-green-100",
               getQuestionStatus(question) === "flagged" &&
-                currentIndex !== index &&
-                "border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100",
+              currentIndex !== index &&
+              "border-yellow-500 bg-yellow-50 text-yellow-700 hover:bg-yellow-100",
             )}
             onClick={() => onNavigate(index)}
           >
@@ -96,9 +98,9 @@ export function QuestionNavigation({
 
       {/* Quick Actions */}
       <div className="mt-4 pt-4 border-t space-y-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="w-full text-xs"
           onClick={() => {
             const nextUnanswered = questions.findIndex((q, i) => i > currentIndex && !isAnswered(q.id))
@@ -110,10 +112,10 @@ export function QuestionNavigation({
         >
           Next Unanswered
         </Button>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
+
+        <Button
+          variant="outline"
+          size="sm"
           className="w-full text-xs"
           onClick={() => {
             const firstFlagged = questions.findIndex(q => isFlagged(q.id))

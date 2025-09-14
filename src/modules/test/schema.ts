@@ -2,11 +2,13 @@ import { z } from 'zod';
 
 export const questionSchema = z.object({
     questionText: z.string().min(1, "Question text is required"),
-    questionType: z.enum(['multiple_choice', 'multiple_select']),
+    questionType: z.enum(['multiple_choice', 'multiple_select', 'code']),
     options: z.array(z.string()).min(2, "At least 2 options required"),
     correctAnswers: z.array(z.number()).min(1, "At least one correct answer required"),
     marks: z.number().min(1, "Marks must be at least 1"),
     order: z.number(),
+    codeSnippet: z.string().optional(),
+    language: z.string().optional(),
 });
 
 export const createTestSchema = z.object({

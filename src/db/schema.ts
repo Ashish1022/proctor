@@ -4,7 +4,7 @@ import { relations } from 'drizzle-orm';
 
 export const userRoles = pgEnum('user_roles', ['student', 'admin']);
 export const userYear = pgEnum('user_year', ['BE', 'SE', 'TE']);
-export const questionTypes = pgEnum('question_types', ['multiple_choice', 'multiple_select']);
+export const questionTypes = pgEnum('question_types', ['multiple_choice', 'multiple_select', 'code']);
 export const testStatus = pgEnum('test_status', ['draft', 'published', 'archived']);
 export const submissionStatus = pgEnum('submission_status', ['in_progress', 'submitted', 'graded']);
 
@@ -56,6 +56,9 @@ export const questions = pgTable("questions", {
 
     questionText: text("question_text").notNull(),
     questionType: questionTypes("question_type").notNull(),
+
+    codeSnippet: text("code_snippet"), 
+    language: text("language"),
 
     options: json("options").$type<string[]>().notNull(),
 

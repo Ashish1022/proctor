@@ -16,12 +16,14 @@ import toast from "react-hot-toast"
 
 interface Question {
     id: string
-    type: "multiple_choice" | "multiple_select"
-    question: string
+    type: "multiple_choice" | "multiple_select" | "code"
+    questionText: string
     options?: string[]
-    correctAnswer?: string | string[]
-    points: number
+    correctAnswers?: number[]
+    marks: number
     timeLimit?: number
+    codeSnippet?: string;
+    language?: string;
 }
 
 interface TestData {
@@ -37,6 +39,15 @@ interface TestData {
         requireProctoring: boolean
         antiCheatEnabled: boolean
     }
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
 }
 
 export default function TestPage({
@@ -71,7 +82,6 @@ export default function TestPage({
 
     const startTestMutation = useMutation(trpc.submission.startTest.mutationOptions({
         onSuccess: (data) => {
-            console.log('Test started:', data)
             toast.success("Test started successfully!")
         },
         onError: (error) => {
@@ -82,9 +92,7 @@ export default function TestPage({
 
     const submitTestMutation = useMutation(trpc.submission.submit.mutationOptions({
         onSuccess: (data) => {
-            console.log('Test submitted successfully:', data)
             toast.success("Test submitted successfully!")
-            router.push(`/test/${testId}/results`)
         },
         onError: (error) => {
             console.error('Submit test error:', error)
@@ -95,20 +103,24 @@ export default function TestPage({
 
     useEffect(() => {
         if (testDataResponse) {
+            const questions = testDataResponse.questions.map(q => ({
+                id: q.id,
+                type: q.questionType as Question["type"],
+                questionText: q.questionText,
+                options: q.options || undefined,
+                correctAnswers: q.correctAnswers,
+                marks: q.marks,
+                timeLimit: undefined,
+                codeSnippet: q.codeSnippet || undefined,
+                language: q.language || undefined
+            }));
+
             const transformedTestData: TestData = {
                 id: testDataResponse.id,
                 title: testDataResponse.title,
                 description: testDataResponse.description || "",
                 duration: testDataResponse.duration,
-                questions: testDataResponse.questions.map(q => ({
-                    id: q.id,
-                    type: q.questionType as Question["type"],
-                    question: q.questionText,
-                    options: q.options || undefined,
-                    correctAnswer: q.correctAnswers,
-                    points: q.marks,
-                    timeLimit: undefined
-                })),
+                questions: shuffleArray(questions), 
                 settings: {
                     shuffleQuestions: true,
                     showResults: true,
@@ -134,7 +146,7 @@ export default function TestPage({
                         if (answer.selectedAnswers.length > 0) {
                             const question = testDataResponse?.questions.find(q => q.id === answer.questionId)
                             if (question) {
-                                if (question.questionType === 'multiple_choice') {
+                                if (question.questionType === 'multiple_choice' || question.questionType === 'code') {
                                     existingAnswersMap[answer.questionId] = question.options?.[answer.selectedAnswers[0]]
                                 } else if (question.questionType === 'multiple_select') {
                                     existingAnswersMap[answer.questionId] = answer.selectedAnswers.map(
@@ -248,8 +260,6 @@ export default function TestPage({
             forced,
         }
 
-        console.log("Submitting test data:", submissionData)
-
         try {
             await submitTestMutation.mutateAsync(submissionData)
         } catch (error) {
@@ -290,10 +300,9 @@ export default function TestPage({
                         <h2 className="text-xl font-semibold mb-2">Test Submitted Successfully</h2>
                         <p className="text-gray-600 mb-4">Your answers have been recorded and will be reviewed.</p>
                         <Button
-                            onClick={() => router.push(`/test/${testId}/results`)}
                             disabled={submitTestMutation.isPending}
                         >
-                            {submitTestMutation.isPending ? "Processing..." : "View Results"}
+                            {submitTestMutation.isPending ? "Processing..." : "Submitted Successfully"}
                         </Button>
                     </CardContent>
                 </Card>
@@ -322,10 +331,16 @@ export default function TestPage({
                                 </div>
                                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                                     <div className="text-2xl font-bold text-purple-600">
-                                        {testData.questions.reduce((sum, q) => sum + q.points, 0)}
+                                        {testData.questions.reduce((sum, q) => sum + q.marks, 0)}
                                     </div>
                                     <div className="text-sm text-purple-600">Total Points</div>
                                 </div>
+                            </div>
+
+                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="text-blue-800 text-sm">
+                                    Questions will be presented in random order for each student.
+                                </p>
                             </div>
 
                             {existingSubmission && existingSubmission.status === 'in_progress' && (
@@ -368,9 +383,12 @@ export default function TestPage({
                                 <Badge variant="outline">
                                     Question {currentQuestionIndex + 1} of {testData.questions.length}
                                 </Badge>
-                                <Badge variant="outline">{currentQuestion.points} points</Badge>
+                                <Badge variant="outline">{currentQuestion.marks} points</Badge>
                                 <Badge variant="outline">
                                     {answeredCount}/{testData.questions.length} answered
+                                </Badge>
+                                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                    Randomized
                                 </Badge>
                             </div>
                         </div>

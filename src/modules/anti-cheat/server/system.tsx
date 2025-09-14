@@ -46,7 +46,7 @@ const AntiCheatSystem: React.FC<AntiCheatSystemProps> = ({
     onQuizTerminated,
     isQuizActive = false,
     strictMode = true,
-    maxViolations = 3
+    maxViolations = 10
 }) => {
     // Core state
     const [violations, setViolations] = useState<Violation[]>([]);

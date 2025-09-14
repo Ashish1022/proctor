@@ -38,6 +38,8 @@ export const testRouter = createTRPCRouter({
                 correctAnswers: q.correctAnswers,
                 marks: q.marks,
                 order: q.order,
+                codeSnippet: q.codeSnippet || null,
+                language: q.language || null,
             }));
 
             await ctx.db.insert(questions).values(questionsToInsert);
@@ -368,7 +370,7 @@ export const testRouter = createTRPCRouter({
                     // Check if user can take the test
                     const canTake = !test.userSubmission || test.userSubmission.status === 'in_progress';
 
-                    return   canTake;
+                    return canTake;
                 });
 
                 const submittedTests = testsWithSubmissions.filter(test =>

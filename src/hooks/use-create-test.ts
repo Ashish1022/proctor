@@ -3,7 +3,7 @@
 import { useTRPC } from '@/trpc/client';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 
 export const useCreateTest = () => {
     const trpc = useTRPC();

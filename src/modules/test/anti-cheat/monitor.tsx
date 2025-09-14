@@ -23,13 +23,12 @@ export function AntiCheatMonitor({ onForceSubmit, testId }: AntiCheatMonitorProp
     detectTabSwitch: true,
     detectWindowBlur: true,
     detectDevTools: true,
-    maxViolations: 3,
+    maxViolations: 10,
     autoSubmitOnViolation: true,
   }
 
   const handleViolation = (event: any) => {
     console.log("[v0] Anti-cheat violation detected:", event)
-    // Send violation to server
     fetch("/api/test/violations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -137,7 +136,7 @@ export function AntiCheatMonitor({ onForceSubmit, testId }: AntiCheatMonitorProp
         {/* Violation Count */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Violations:</span>
-          <Badge className={getViolationColor(violationCount)}>{violationCount}/3</Badge>
+          <Badge className={getViolationColor(violationCount)}>{violationCount}/10</Badge>
         </div>
 
         {/* Actions */}

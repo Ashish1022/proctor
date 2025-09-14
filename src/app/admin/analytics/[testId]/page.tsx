@@ -81,8 +81,6 @@ export default function TestAnalyticsPage() {
     }
 
     const handleViewDetails = (studentId: string) => {
-        // Navigate to student details or open modal
-        console.log("View details for student:", studentId)
     }
 
     // Filter students based on search and status
