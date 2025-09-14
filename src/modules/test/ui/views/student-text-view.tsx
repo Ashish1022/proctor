@@ -9,7 +9,7 @@ import { AntiCheatMonitor } from "@/modules/test/anti-cheat/monitor"
 import { QuestionNavigation } from "@/modules/test/ui/question-navigation"
 import { TestQuestion } from "@/modules/test/ui/test-question"
 import { TestTimer } from "@/modules/test/ui/test-timer"
-import { AlertTriangle, Flag, ChevronLeft, ChevronRight, Send, Clock, FileText, Users, Target } from "lucide-react"
+import { AlertTriangle, Flag, ChevronLeft, ChevronRight, Send, Clock, FileText, Target } from "lucide-react"
 import { useTRPC } from "@/trpc/client"
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
@@ -63,6 +63,7 @@ export default function TestPage({
     const router = useRouter()
     const [testData, setTestData] = useState<TestData | null>(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+    // @typescript-eslint/no-explicit-any
     const [answers, setAnswers] = useState<Record<string, any>>({})
     const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set())
     const [timeRemaining, setTimeRemaining] = useState(0)
@@ -85,7 +86,7 @@ export default function TestPage({
     )
 
     const startTestMutation = useMutation(trpc.submission.startTest.mutationOptions({
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success("Test started successfully!")
         },
         onError: (error) => {
@@ -95,11 +96,10 @@ export default function TestPage({
     }))
 
     const submitTestMutation = useMutation(trpc.submission.submit.mutationOptions({
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success("Test submitted successfully!")
         },
         onError: (error) => {
-            console.error('Submit test error:', error)
             toast.error("Failed to submit test. Please try again.")
             setTestSubmitted(false)
         }
@@ -157,6 +157,7 @@ export default function TestPage({
                 setTestSubmitted(true)
             } else if (existingSubmission.status === 'in_progress') {
                 if (existingSubmission.answers && existingSubmission.answers.length > 0) {
+                    // @typescript-eslint/no-explicit-any
                     const existingAnswersMap: Record<string, any> = {}
                     existingSubmission.answers.forEach(answer => {
                         if (answer.selectedAnswers.length > 0) {

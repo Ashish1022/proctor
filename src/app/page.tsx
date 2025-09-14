@@ -1,8 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, Users, BarChart3, LogIn, UserPlus, Clock, Award, Zap } from "lucide-react"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Trophy, Users, LogIn, UserPlus, Clock, Award } from "lucide-react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 export default function CollegeQuizHomePage() {
@@ -14,9 +15,7 @@ export default function CollegeQuizHomePage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-white" />
-              </div>
+              <Image src={'/logo.jpeg'} alt="logo" height={50} width={50} className="rounded-md"/>
               <h1 className="text-xl font-heading font-bold">ITSA</h1>
             </div>
             <div className="flex gap-2">
