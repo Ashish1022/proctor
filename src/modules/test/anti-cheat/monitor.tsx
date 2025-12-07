@@ -88,7 +88,7 @@ export function AntiCheatMonitor({ onForceSubmit, testId }: AntiCheatMonitorProp
   if (!showViolations) {
     // Minimized view - just show violation count
     return (
-      <div 
+      <div
         className="fixed bottom-4 right-4 z-50 cursor-pointer"
         onClick={handleToggleViolations}
         title="Click to expand security monitor"
